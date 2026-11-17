@@ -1,13 +1,21 @@
-// index.js
-// Main file: connects to WhatsApp and runs bot
 require("dotenv").config();
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const qrcode = require("qrcode-terminal");
+const express = require("express");
+const app = express();
+const port = process.env.PORT || 3000;
+
 const config = require("./config");
 const { containsLink } = require("./linkDetector");
 const { getAiReply } = require("./aiReply");
 
-// Create the WhatsApp client. LocalAuth saves session data
+app.get("/", (req, res) => {
+  res.send("Bot is running!");
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
@@ -16,7 +24,6 @@ const client = new Client({
   },
 });
 
-// Listen for pairing code instead of QR
 client.on("code", (code) => {
   console.log("Pairing code: ", code);
 });
@@ -40,4 +47,5 @@ client.on("message", async (msg) => {
 });
 
 client.initialize();
+
 
